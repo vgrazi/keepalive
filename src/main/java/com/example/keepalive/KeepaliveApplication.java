@@ -30,7 +30,7 @@ public class KeepaliveApplication implements CommandLineRunner {
         JButton button = new JButton();
         button.addActionListener((event)->{
             Point location = MouseInfo.getPointerInfo().getLocation();
-//            log.info(location.toString());
+            log.info(location.toString());
         });
         ExecutorService executor = Executors.newSingleThreadExecutor();
         frame.getContentPane().add(button);

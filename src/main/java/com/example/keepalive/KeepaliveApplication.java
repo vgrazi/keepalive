@@ -17,7 +17,7 @@ import java.util.concurrent.Executors;
 @SpringBootApplication
 public class KeepaliveApplication implements CommandLineRunner {
 
-    private static final int SLEEP_TIME = 120 * 10;
+    private static final int SLEEP_TIME = 120 * 1000;
     private final JFrame frame=new JFrame("Keepalive");
     private final JTextArea textArea=new JTextArea();
     private final JScrollPane scrollPane=new JScrollPane(textArea);

@@ -24,9 +24,9 @@ public class KeepaliveApplication implements CommandLineRunner {
     private int position;
 
     public static void main(String[] args) {
-        SpringApplicationBuilder builder=new SpringApplicationBuilder(KeepaliveApplication.class);
+        SpringApplicationBuilder builder = new SpringApplicationBuilder(KeepaliveApplication.class);
         builder.headless(false);
-        ConfigurableApplicationContext context=builder.run(args);
+        ConfigurableApplicationContext context = builder.run(args);
     }
 
     @Override
@@ -74,7 +74,6 @@ public class KeepaliveApplication implements CommandLineRunner {
             } finally {
                 message("Exiting");
             }
-
 
         }, executor);
     }

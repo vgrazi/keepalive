@@ -8,6 +8,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -32,33 +33,33 @@ public class KeepaliveApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JButton button=new JButton();
+        JButton button=new JButton("Clear");
         button.addActionListener((event) -> {
             textArea.setText("");
-            Point location=MouseInfo.getPointerInfo().getLocation();
+            Point location=getPointerLocation();
             message(location);
 //            log.info(location.toString());
         });
         ExecutorService executor=Executors.newSingleThreadExecutor();
         frame.getContentPane().add(BorderLayout.SOUTH, button);
         frame.getContentPane().add(BorderLayout.CENTER, scrollPane);
-        Point startLocation=MouseInfo.getPointerInfo().getLocation();
+        Point startLocation=getPointerLocation();
         frame.setBounds(startLocation.x - 50, startLocation.y - 10, 500, 300);
         frame.setVisible(true);
         Robot r=new Robot();
         CompletableFuture.runAsync(() -> {
-            Point lastLocation=MouseInfo.getPointerInfo().getLocation();
+            Point lastLocation=getPointerLocation();
             int direction=1;
             try {
                 while(true) {
                     // check the last mouse position
-                    Point location=MouseInfo.getPointerInfo().getLocation();
+                    Point location=getPointerLocation();
                     // if we have moved since the last check, do nothing
                     if(location.equals(lastLocation)) {// otherwise, move it one pixel
                         // set the new value for the last mouse position
                         lastLocation=new Point(location.x + direction, location.y);
                         moveTo(r, location.x + direction, location.y);
-                        message(MouseInfo.getPointerInfo().getLocation());
+                        message(getPointerLocation());
 
                         // toggle direction
                         direction=-direction;
@@ -68,9 +69,11 @@ public class KeepaliveApplication implements CommandLineRunner {
                     }
                     sleep(SLEEP_TIME);
                 }
-            } catch(Error e) {
+            } catch(Throwable e) {
                 e.printStackTrace();
-                message(e);
+                message("Error " + e);
+                StackTraceElement[] stackTrace=e.getStackTrace();
+                Arrays.stream(stackTrace).map(el->"   " + el.toString()).forEach(this::message);
             } finally {
                 message("Exiting");
             }
@@ -78,7 +81,17 @@ public class KeepaliveApplication implements CommandLineRunner {
         }, executor);
     }
 
+    private Point getPointerLocation() {
+        PointerInfo pointerInfo=MouseInfo.getPointerInfo();
+        Point location=null;
+        if(pointerInfo!=null) {
+            location=pointerInfo.getLocation();
+        }
+        return location;
+    }
+
     private void message(Object message) {
+
         textArea.append(new Date().toString());
         textArea.append(" ");
         textArea.append(String.valueOf(++position));
